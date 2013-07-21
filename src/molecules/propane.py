@@ -1,0 +1,81 @@
+
+
+from collections import namedtuple
+
+import numpy as np
+
+Atom = namedtuple('Atom','index type x y z vec fnn snn tnn charge')
+Bond = namedtuple('Bond','index label i j length')
+Angle = namedtuple('Angle','index label i j k angle')
+Torsion = namedtuple('Torsion','index label i j k l angle')
+
+Sysdata = namedtuple('Sysdata','Atoms,Bonds,Angles,Torsions')
+
+
+Atoms = []
+Bonds = []
+Angles = []
+Torsions = []
+
+
+Atoms.append(Atom(0,'c3',0.962000,0.084000,-0.058000,np.array([0.962000,0.084000,-0.058000]),[1,3,4,5],[0,2,6,7],[1,3,4,5,8,9,10],-0.093100))
+Atoms.append(Atom(1,'c3',2.481000,0.058000,-0.069000,np.array([2.481000,0.058000,-0.069000]),[0,2,6,7],[1,3,4,5,8,9,10],[0,2,6,7],-0.081400))
+Atoms.append(Atom(2,'c3',3.014000,-1.252000,-0.625000,np.array([3.014000,-1.252000,-0.625000]),[1,8,9,10],[0,2,6,7],[1,3,4,5,8,9,10],-0.093100))
+Atoms.append(Atom(3,'hc',0.602000,1.036000,0.346000,np.array([0.602000,1.036000,0.346000]),[0],[1,3,4,5],[0,2,6,7],0.032367))
+Atoms.append(Atom(4,'hc',0.560000,-0.722000,0.563000,np.array([0.560000,-0.722000,0.563000]),[0],[1,3,4,5],[0,2,6,7],0.032367))
+Atoms.append(Atom(5,'hc',0.560000,-0.029000,-1.070000,np.array([0.560000,-0.029000,-1.070000]),[0],[1,3,4,5],[0,2,6,7],0.032367))
+Atoms.append(Atom(6,'hc',2.856000,0.201000,0.950000,np.array([2.856000,0.201000,0.950000]),[1],[0,2,6,7],[1,3,4,5,8,9,10],0.036700))
+Atoms.append(Atom(7,'hc',2.856000,0.891000,-0.675000,np.array([2.856000,0.891000,-0.675000]),[1],[0,2,6,7],[1,3,4,5,8,9,10],0.036700))
+Atoms.append(Atom(8,'hc',2.678000,-2.100000,-0.022000,np.array([2.678000,-2.100000,-0.022000]),[2],[8,1,10,9],[0,2,6,7],0.032367))
+Atoms.append(Atom(9,'hc',4.109000,-1.246000,-0.623000,np.array([4.109000,-1.246000,-0.623000]),[2],[8,1,10,9],[0,2,6,7],0.032367))
+Atoms.append(Atom(10,'hc',2.678000,-1.407000,-1.655000,np.array([2.678000,-1.407000,-1.655000]),[2],[8,1,10,9],[0,2,6,7],0.032367))
+Bonds.append(Bond(0,'c3-c3',0,1,111))
+Bonds.append(Bond(1,'c3-hc',0,3,111))
+Bonds.append(Bond(2,'c3-hc',0,4,111))
+Bonds.append(Bond(3,'c3-hc',0,5,111))
+Bonds.append(Bond(4,'c3-c3',1,2,111))
+Bonds.append(Bond(5,'c3-hc',1,6,111))
+Bonds.append(Bond(6,'c3-hc',1,7,111))
+Bonds.append(Bond(7,'c3-hc',2,8,111))
+Bonds.append(Bond(8,'c3-hc',2,9,111))
+Bonds.append(Bond(9,'c3-hc',2,10,111))
+Angles.append(Angle(0,'c3-c3-hc',1,0,3,222))
+Angles.append(Angle(1,'c3-c3-hc',1,0,4,222))
+Angles.append(Angle(2,'c3-c3-hc',1,0,5,222))
+Angles.append(Angle(3,'c3-c3-c3',0,1,2,222))
+Angles.append(Angle(4,'c3-c3-hc',0,1,6,222))
+Angles.append(Angle(5,'c3-c3-hc',0,1,7,222))
+Angles.append(Angle(6,'hc-c3-hc',3,0,4,222))
+Angles.append(Angle(7,'hc-c3-hc',3,0,5,222))
+Angles.append(Angle(8,'hc-c3-hc',4,0,5,222))
+Angles.append(Angle(9,'c3-c3-hc',2,1,6,222))
+Angles.append(Angle(10,'c3-c3-hc',2,1,7,222))
+Angles.append(Angle(11,'c3-c3-hc',1,2,8,222))
+Angles.append(Angle(12,'c3-c3-hc',1,2,9,222))
+Angles.append(Angle(13,'c3-c3-hc',1,2,10,222))
+Angles.append(Angle(14,'hc-c3-hc',6,1,7,222))
+Angles.append(Angle(15,'hc-c3-hc',8,2,9,222))
+Angles.append(Angle(16,'hc-c3-hc',8,2,10,222))
+Angles.append(Angle(17,'hc-c3-hc',9,2,10,222))
+Torsions.append(Torsion(0,'c3-c3-c3-hc',2,1,0,3,333))
+Torsions.append(Torsion(1,'hc-c3-c3-hc',6,1,0,3,333))
+Torsions.append(Torsion(2,'hc-c3-c3-hc',7,1,0,3,333))
+Torsions.append(Torsion(3,'c3-c3-c3-hc',2,1,0,4,333))
+Torsions.append(Torsion(4,'hc-c3-c3-hc',6,1,0,4,333))
+Torsions.append(Torsion(5,'hc-c3-c3-hc',7,1,0,4,333))
+Torsions.append(Torsion(6,'c3-c3-c3-hc',2,1,0,5,333))
+Torsions.append(Torsion(7,'hc-c3-c3-hc',6,1,0,5,333))
+Torsions.append(Torsion(8,'hc-c3-c3-hc',7,1,0,5,333))
+Torsions.append(Torsion(9,'c3-c3-c3-hc',0,1,2,8,333))
+Torsions.append(Torsion(10,'c3-c3-c3-hc',0,1,2,9,333))
+Torsions.append(Torsion(11,'c3-c3-c3-hc',0,1,2,10,333))
+Torsions.append(Torsion(12,'hc-c3-c3-hc',8,2,1,6,333))
+Torsions.append(Torsion(13,'hc-c3-c3-hc',9,2,1,6,333))
+Torsions.append(Torsion(14,'hc-c3-c3-hc',10,2,1,6,333))
+Torsions.append(Torsion(15,'hc-c3-c3-hc',8,2,1,7,333))
+Torsions.append(Torsion(16,'hc-c3-c3-hc',9,2,1,7,333))
+Torsions.append(Torsion(17,'hc-c3-c3-hc',10,2,1,7,333))
+Torsions.append(Torsion(18,'c3-c3-c3-hc',0,1,2,8,333))
+Torsions.append(Torsion(19,'c3-c3-c3-hc',0,1,2,9,333))
+Torsions.append(Torsion(20,'c3-c3-c3-hc',0,1,2,10,333))
+inputdata = Sysdata(Atoms,Bonds,Angles,Torsions)
