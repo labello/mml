@@ -1,0 +1,3 @@
+[submodule "amberff"]
+	path = amberff
+	url = https://github.com/labello/amberff
