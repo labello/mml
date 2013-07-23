@@ -51,6 +51,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='\n\n    Molecular Modeling Lite\n',add_help=True)
     parser.add_argument('--molecule',help='The molecular system from ../mml/molecules')
     parser.add_argument('--routine',default='energy',help='energy, geometry, or dynamics')
+    parser.add_argument('--ffield',default='gaff',help='amber94 or gaff')
     parser.add_argument('--tol',default=5,help='Energy tolerance for gemoetry optimization')
     parser.add_argument('--outputlevel',default=30,help='''The priority of the 
      output that is generated.  Lower numbers correspond to lower priority 
