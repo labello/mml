@@ -11,7 +11,6 @@ logging.basicConfig(filename=__name__,level=30)
 def ambergaffenergy(coordinates,system=ethane.inputdata):
 
     from amberff import gaffparams as ffparams
-     
     Ebond    = calc_bond_energy(ffparams,system,coordinates)
     Eangle   = calc_angle_energy(ffparams,system,coordinates) 
     Etorsion = calc_torsion_energy(ffparams,system,coordinates)
@@ -106,23 +105,18 @@ def get_bond_params(ffparams,system,bond):
            '-'.join([a2.type,a1.type])]
     params = None
     for dk in dks:
-        try:
-            params = ffparams.Bonds[dk]
-            logging.debug('Using parameter for %s' % dk)
-            break
-        except KeyError:
-            logging.critical('Parameter %s not found' % dk)           
-    return params
+        if dk in ffparams.Bonds:
+            return ffparams.Bonds[dk]
     
 def get_angle_params(ffparams,system,angle):
-    try:        
-        dk = angle.label
-        params = ffparams.Angles[dk]
-    except KeyError:
-        dk = angle.label ; dk.reverse()
-        params = ffparams.Angles[dk]
-     
-    return params
+    a1 = system.Atoms[angle.i]
+    a2 = system.Atoms[angle.j]
+    a3 = system.Atoms[angle.k]
+    dks = ['-'.join([a1.type,a2.type,a3.type]),
+           '-'.join([a3.type,a2.type,a1.type])]
+    for dk in dks:
+        if dk in ffparams.Angles:
+            return ffparams.Angles[dk]
      
 def get_tor_params(ffparams,system,torsion):
     a1 = system.Atoms[torsion.i]
@@ -136,12 +130,8 @@ def get_tor_params(ffparams,system,torsion):
     '-'.join([ 'X',a2.type,a3.type,'X']) ]
         
     for dk in dks:
-        try:
-            params = ffparams.Torsions[dk]
-            logging.debug('Using parameter for %s' % dk)
-            break
-        except KeyError:
-            logging.critical('Parameter %s not found' % dk)
+        if dk in ffparams.Torsions:
+            return ffparams.Torsions[dk]
     return params
 
 def get_vdw_params(ffparams,atom):
