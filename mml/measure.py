@@ -69,7 +69,9 @@ def vec_dihedral(v1,v2,v3,v4):
     porm = np.sign((v1 * a3).sum())
     rad = np.arccos((v1*v2).sum() / ((v1**2).sum() * (v2**2).sum())**0.5)
     angle = porm * rad
-    
+    if np.isnan(angle):
+        print 'adjusting angle'
+        angle = 1.0
     return math.degrees(angle)
     
 def distance(p1,p2):
