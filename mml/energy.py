@@ -9,7 +9,7 @@ import amber
 import measure 
 
 
-def main(molecule,ffield,report=False):
+def main(molecule,ffield,noreport=False):
     ''' Calculate the energy for the specified molecular system and forcefield.
         
         * molecule: a module (e.g., ethane.py) from the molecules directory. 
@@ -23,13 +23,22 @@ def main(molecule,ffield,report=False):
 # import the appropriate molecular system
     importmodule = importlib.import_module( 'molecules.' + molecule )
     system = importmodule.inputdata
-  
     coordinates = input2cartesian_array(system.Atoms)  
 
-    results = amber.ambergaffenergy(coordinates,system)
-    E = results['E']
+    energy(coordinates,ffield,system,noreport)
 
-    if report:
+def energy(coordinates,ffield,system,noreport=True):
+
+
+    if ffield == 'gaff':
+        results = amber.ambergaffenergy(coordinates,system)
+        E = results['E']
+
+    elif ffield == 'amber94':
+        results = amber.amber94energy(coordinates,system)
+        E = results['E']
+
+    if not noreport:
        print_report(system,results)
 
     return E
@@ -80,7 +89,7 @@ def print_report(system,results):
 
     print vdwheader
  
-    template = "{0:4d} {1:4d} {2:3s} {3:3s} {4:4.2f} Angs {5:>7.3f} kcal/mol"
+    template = "{0:4d} {1:4d} {2:3s} {3:3s} {4:>5.2f} Angs {5:>7.3f} kcal/mol"
     for vdwpair in results['EVDWs']:
         ai,aj,r,e = vdwpair
         print template.format(ai.index,aj.index,ai.type,aj.type,r,e)
@@ -98,7 +107,7 @@ def print_report(system,results):
     print "E(VDW)      %12.6f kcal/mol" % results['EVDW']
     print "E(EL)       %12.6f kcal/mol" % results['Eel']
     print ""
-    print "Total: %f kcal/mol \n" % (results['E'])
+    print "E(TOTAL): %f kcal/mol \n" % (results['E'])
 
 
 def input2cartesian_array(Atoms):
@@ -109,7 +118,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='\n\n    Molecular Modeling Lite\n',add_help=True)
     parser.add_argument('--molecule',default='ethane',help='The molecular system from ../mml/molecules')
     parser.add_argument('--ffield',default='gaff',help='amber94 or gaff')
-    parser.add_argument('--report',default=True ,help='Print a detailed report')
+    parser.add_argument('--noreport',action='store_true',help='Do not print report.')
     args = parser.parse_args()
-    main( args.molecule,args.ffield,args.report)
+    main( args.molecule,args.ffield,args.noreport)
 
