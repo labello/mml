@@ -25,7 +25,7 @@ class Atom:
     x                   The atom's X Cartesian coordinate
     y                   The atom's Y Cartesian coordinate
     z                   The atom's Z Cartesian coordinate
-    coods               A vector of the atom cooridinates <x,y,z> 
+    vec                 A vector of the atom cooridinates <x,y,z> 
     '''
 
     atom_id = 0
@@ -45,7 +45,7 @@ class Atom:
         self.x = x
         self.y = y
         self.z = z
-        self.coords = np.array([x,y,z])
+        self.vec = np.array([x,y,z])
 
 # Increment the atom_id counter each time a new Atom instance is created
         Atom.atom_id += 1 
@@ -63,6 +63,8 @@ class Bond:
     atoms               A list of Atom types
     atom1               The first atom in the list
     atom2               The second atom in the list
+    i                   Convenience attribute to reference atom1.index
+    j                   Convenience attribute to reference atom2.index
     length              The distance between atom1 and atom2
 
     '''
@@ -74,6 +76,8 @@ class Bond:
         self.atoms = atoms
         self.atom1 = atoms[0]
         self.atom2 = atoms[1]
+        self.i = self.atom1.index
+        self.j = self.atom2.index
         self.bondtype = '-'.join([self.atom1.atomtype,self.atom2.atomtype])
 
 # Increment the bond_id counter each time a new Bond instance is created
@@ -96,6 +100,9 @@ class Angle:
     atom1               The first atom in the list
     atom2               The second atom in the list
     atom3               The third atom in the list
+    i                   Convenience attribute to reference atom1.index
+    j                   Convenience attribute to reference atom2.index
+    k                   Convenience attribute to reference atom3.index
     angle               The atom1--atom2--atom3 angle
 
     '''
@@ -108,6 +115,9 @@ class Angle:
         self.atom1 = atoms[0]
         self.atom2 = atoms[1]
         self.atom3 = atoms[2]
+        self.i = self.atom1.index
+        self.j = self.atom2.index
+        self.k = self.atom3.index
         self.angletype = '-'.join([self.atom1.atomtype,self.atom2.atomtype,self.atom3.atomtype])
 # Increment the angle_id counter each time a new Angle instance is created
         Angle.angle_id += 1
@@ -130,6 +140,10 @@ class Torsion:
     atom2               The second atom in the list
     atom3               The third atom in the list
     atom4               The forth atom in the list
+    i                   Convenience attribute to reference atom1.index
+    j                   Convenience attribute to reference atom2.index
+    k                   Convenience attribute to reference atom3.index
+    l                   Convenience attribute to reference atom4.index
     torsion             The atom1-atom2---atom3-atom4 dihedral angle
 
     '''
@@ -143,6 +157,10 @@ class Torsion:
         self.atom2 = atoms[1]
         self.atom3 = atoms[2]
         self.atom4 = atoms[3]
+        self.i = self.atom1.index
+        self.j = self.atom2.index
+        self.k = self.atom3.index
+        self.l = self.atom4.index
         self.torsiontype = '-'.join([self.atom1.atomtype,self.atom2.atomtype,self.atom3.atomtype,self.atom4.atomtype]) 
 
 # Increment the angle_id counter each time a new Angle instance is created
@@ -166,16 +184,16 @@ class Universe:
   
 
     def update_neighbor_assignments(self):
-    '''
-    This method updates the fnn, snn, and tnn fields of atoms in the universe. It should
-    be run following a change in the universe atoms or bonds. Be sure to run it if the
-    universe is instantiated empty, with atoms and bonds added later.  
+        '''
+        This method updates the fnn, snn, and tnn fields of atoms in the universe. It should
+        be run following a change in the universe atoms or bonds. Be sure to run it if the
+        universe is instantiated empty, with atoms and bonds added later.  
 
-    universe = Universe()
+        universe = Universe()
       # add atoms and bonds to universe.atoms and universe.bonds 
-    universe.update_neighbor_assignments()
+        universe.update_neighbor_assignments()
 
-    '''
+        '''
         for atom in self.atoms:
             atom.fnn = self.__get_first_nearest_neighbors(atom) 
             atom.snn = self.__get_second_nearest_neighbors(atom)

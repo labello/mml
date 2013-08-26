@@ -9,7 +9,6 @@ import energy
 
 def main(molecule,ffield,tol):
   
-    print molecule
     importmodule = importlib.import_module( 'molecules.' + molecule )
     system = importmodule.inputdata
     coordinates = input2cartesian_array(system.Atoms)  
