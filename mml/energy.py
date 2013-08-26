@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 import argparse
-import importlib
 import sys
 import numpy as np
 
 import amber
 import measure 
+import read_input
 
 
-def main(molecule,ffield,noreport=False):
-    ''' Calculate the energy for the specified molecular system and forcefield.
+def main(molfile='/Users/labello/gitwork/mml/no-git/molecules/acfiles/ethane.mol.ac',ffield='gaff',noreport=False):
+    ''' Calculate the energy for the specified molecular universe and forcefield.
         
         * molecule: a module (e.g., ethane.py) from the molecules directory. 
             The molecule data (bond tables, coordinates, angles, torsions, etc.,
@@ -19,31 +19,31 @@ def main(molecule,ffield,noreport=False):
 `
         * ffield:   gaff or amber94
     '''
+    print molfile
+    universe = read_input.main(molfile)
+    print universe
+ 
+    coordinates = input2cartesian_array(universe.atoms)  
 
-# import the appropriate molecular system
-    importmodule = importlib.import_module( 'molecules.' + molecule )
-    system = importmodule.inputdata
-    coordinates = input2cartesian_array(system.Atoms)  
+    energy(ffield,universe,noreport)
 
-    energy(coordinates,ffield,system,noreport)
-
-def energy(coordinates,ffield,system,noreport=True):
+def energy(ffield,universe,noreport=True):
 
 
     if ffield == 'gaff':
-        results = amber.ambergaffenergy(coordinates,system)
+        results = amber.ambergaffenergy(universe)
         E = results['E']
 
     elif ffield == 'amber94':
-        results = amber.amber94energy(coordinates,system)
+        results = amber.amber94energy(universe)
         E = results['E']
 
     if not noreport:
-       print_report(system,results)
+       print_report(universe,results)
 
     return E
 
-def print_report(system,results):
+def print_report(universe,results):
     
     ldelim = '\n' + 60*'*' + '\n'
     
@@ -57,8 +57,8 @@ def print_report(system,results):
     print header
     
     template = '{0:5d} {1:3s} {2:8.5f} {3:8.5f} {4:8.5f}'
-    for atom in system.Atoms:
-        print template.format(atom.index,atom.type,atom.x,atom.y,atom.z) 
+    for atom in universe.atoms:
+        print template.format(atom.index,atom.atomtype,atom.x,atom.y,atom.z) 
          
     print bondheader
     
@@ -67,7 +67,7 @@ def print_report(system,results):
         bond = bondresult[0]
         r = bondresult[1]
         e = bondresult[2]
-        print template.format(bond.i,bond.j,bond.label,r,e)
+        print template.format(bond.i,bond.j,bond.bondtype,r,e)
         
     print angleheader 
     
@@ -76,7 +76,7 @@ def print_report(system,results):
         angle = angleresult[0]
         theta = angleresult[1]
         e = angleresult[2]
-        print template.format(angle.i,angle.j,angle.k,angle.label,theta,e)
+        print template.format(angle.i,angle.j,angle.k,angle.angletype,theta,e)
 
     print torheader
 
@@ -85,20 +85,20 @@ def print_report(system,results):
         tor = torresult[0]
         phi = torresult[1]
         e = torresult[2]
-        print template.format(tor.i,tor.j,tor.k,tor.l,tor.label,phi,e)
+        print template.format(tor.i,tor.j,tor.k,tor.l,tor.torsiontype,phi,e)
 
     print vdwheader
  
     template = "{0:4d} {1:4d} {2:3s} {3:3s} {4:>5.2f} Angs {5:>7.3f} kcal/mol"
     for vdwpair in results['EVDWs']:
         ai,aj,r,e = vdwpair
-        print template.format(ai.index,aj.index,ai.type,aj.type,r,e)
+        print template.format(ai.index,aj.index,ai.atomtype,aj.atomtype,r,e)
          
     print elheader
     
     for elpair in results['EEls']:
         ai,aj,r,e = elpair
-        print template.format(ai.index,aj.index,ai.type,aj.type,r,e)
+        print template.format(ai.index,aj.index,ai.atomtype,aj.atomtype,r,e)
 
     print"\n"
     print "E(BONDS)    %12.6f kcal/mol" % results['Ebond']
@@ -116,9 +116,10 @@ def input2cartesian_array(Atoms):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='\n\n    Molecular Modeling Lite\n',add_help=True)
-    parser.add_argument('--molecule',default='ethane',help='The molecular system from ../mml/molecules')
+    parser.add_argument('--molfile',default='/Users/labello/gitwork/mml/no-git/molecules/acfiles/ethane.mol.ac',
+     help='Path to .ac molecule file (Antechamber format)')
     parser.add_argument('--ffield',default='gaff',help='amber94 or gaff')
     parser.add_argument('--noreport',action='store_true',help='Do not print report.')
     args = parser.parse_args()
-    main( args.molecule,args.ffield,args.noreport)
+    main(args.molfile,args.ffield,args.noreport)
 
