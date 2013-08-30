@@ -64,10 +64,10 @@ def calc_angle_energy(ffparams,universe):
     for angle in universe.angles:
         atom1,atom2,atom3 = angle.atom1,angle.atom2,angle.atom3 
         params = get_angle_params(ffparams,universe,angle)   
-        k = params.k
-        theta0 = params.theta0
         theta = measure.vec_angle(atom1.vec,atom2.vec,atom3.vec)
-        e = k * (theta - theta0)**2
+        # params.k is kcal/mol/radian**2 as read from amber force field 
+        # math.radieans is used to convert the angle to radians before evaluation
+        e = params.k * (math.radians(theta) - math.radians(params.theta0) )**2
         EAngles.append((angle,theta,e))
         E += e
     return (EAngles,E)

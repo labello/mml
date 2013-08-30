@@ -9,7 +9,7 @@ import measure
 import read_input
 
 
-def main(molfile='/Users/labello/gitwork/mml/no-git/molecules/acfiles/ethane.mol.ac',ffield='gaff',noreport=False):
+def main(molfile=None,ffield='gaff',noreport=False):
     ''' Calculate the energy for the specified molecular universe and forcefield.
         
         * molecule: a module (e.g., ethane.py) from the molecules directory. 
@@ -19,9 +19,7 @@ def main(molfile='/Users/labello/gitwork/mml/no-git/molecules/acfiles/ethane.mol
 `
         * ffield:   gaff or amber94
     '''
-    print molfile
     universe = read_input.main(molfile)
-    print universe
  
     coordinates = input2cartesian_array(universe.atoms)  
 
