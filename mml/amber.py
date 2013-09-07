@@ -2,13 +2,12 @@
 import logging
 import math
 
-from molecules import ethane,propane
 import measure 
 
 # change default level of logger to 10 to print each parmater lookup
 logging.basicConfig(filename=__name__,level=30)
 
-def ambergaffenergy(universe=ethane.inputdata):
+def ambergaffenergy(universe):
     ''' Returns a dictionary with floating point values for the energy contributions
     of the five major components of the forcefield (Ebond,Eangle,Etorsion,EVDW,Eel),
     as well as lists with the contributions from each bond, angle, torsion, or atom
@@ -27,7 +26,7 @@ def ambergaffenergy(universe=ethane.inputdata):
              'ETorsions':ETorsions,'Etorsion':Etorsion,'EVDWs':EVDWs,'EEls':EEls,
              'EVDW':EVDW,'Eel':Eel,'E':E})
     
-def amber94energy(universe=ethane.inputdata):
+def amber94energy(universe):
     ''' Returns a dictionary with floating point values for the energy contributions
     of the five major components of the forcefield (Ebond,Eangle,Etorsion,EVDW,Eel),
     as well as lists with the contributions from each bond, angle, torsion, or atom
@@ -75,15 +74,19 @@ def calc_angle_energy(ffparams,universe):
 def calc_torsion_energy(ffparams,universe):
     E = 0.0
     ETorsions = []
+    counter = 0
     for tor in universe.torsions:
         atom1,atom2,atom3,atom4 = tor.atom1,tor.atom2,tor.atom3,tor.atom4 
         params = get_tor_params(ffparams,universe,tor)
-        Vn2 = params.Vn2
-        gamma = params.gamma
-        period = params.period
-        bondpaths = params.bondpaths
-        phi = measure.vec_dihedral(atom1.vec,atom2.vec,atom3.vec,atom4.vec)
-        e = Vn2 * (1 + math.cos(period*phi - gamma))
+        e = 0
+        for term in params:
+            Vn2 = term.Vn2
+            gamma = term.gamma
+            period = term.period
+            bondpaths = term.bondpaths
+            phi = measure.vec_dihedral(atom1.vec,atom2.vec,atom3.vec,atom4.vec)
+            termE = Vn2 * (1 + (math.cos(math.radians( period*phi - gamma ) ) ) )
+            e = e + termE
         ETorsions.append((tor,phi,e))
         E += e
     return (ETorsions,E)

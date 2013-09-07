@@ -19,6 +19,8 @@ def main(molfile,ffield,tol):
     res = scipy.optimize.minimize(wrap_energy_for_minimizer,flat_coords,args=(ffield,universe),
      method='L-BFGS-B',tol=tol,bounds=None)
      
+    energy.energy(ffield,universe,noreport=False)
+
     print res
 
     

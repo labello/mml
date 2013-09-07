@@ -18,7 +18,6 @@ Angle = namedtuple('Angle','index i j k')
 Torsion = namedtuple('Torsion','index i j k l')
 
 def main(molfile='/Users/labello/simplemm/molecules/acfiles/2.mol.ac'):
-    print molfile,'HI'
     moldata = open(molfile,'r').readlines()
     moldata = filter(moldata)
 
