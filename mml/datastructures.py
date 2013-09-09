@@ -53,6 +53,21 @@ class Atom:
 # Increment the atom_id counter each time a new Atom instance is created
         Atom.atom_id += 1 
 
+    def update_coords(self,x,y,z):
+        '''Make changes to the coordinates of the atoms using this function to ensure that
+           all four Cartesian related properties remain in sync.
+           
+           *Usage
+           for atom in universe:
+               atom.update_coords(newx,newy,newz) 
+        '''
+        self.x = x
+        self.y = y
+        self.z = z
+        self.vec = np.array([x,y,z])
+
+
+        
 class Bond:
     '''
     A bond object is a container for atoms that participate in the bond, plus some 
