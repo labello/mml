@@ -14,8 +14,7 @@ def main(molfile,method,tol):
     ffield='gaff'
     energy.energy(ffield,universe,noreport=False)
 
-    coordinates = universe.get_cartesian_atom_array()
-    flat_coords = np.ndarray.flatten(coordinates)
+    flat_coords = universe.get_flat_cartesian_atom_array()
 
     res = scipy.optimize.minimize(wrap_energy_for_minimizer,flat_coords,args=(ffield,universe),
      method=method,tol=tol,bounds=None)

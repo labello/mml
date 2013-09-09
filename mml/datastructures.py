@@ -205,7 +205,15 @@ class Universe:
   
 
     def get_cartesian_atom_array(self):
+        '''Return a single NATOMSx3 Numpy array with the Cartesian coordinates'''
         return np.vstack(atom.vec for atom in self.atoms)
+
+    def get_flat_cartesian_atom_array(self):
+        '''Return a vector of the cartesian coordinates.  Useful for the built-in SciPy
+        routines.    
+        '''
+        return np.ndarray.flatten(self.get_cartesian_atom_array())
+
 
     def write_xyz(self,filehandle='MINIMIZE.xyz'):
         '''
