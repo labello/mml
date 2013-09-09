@@ -46,7 +46,10 @@ class Atom:
         self.y = y
         self.z = z
         self.vec = np.array([x,y,z])
-
+        self.vx = 0.0
+        self.vy = 0.0
+        self.vz = 0.0
+        self.vvec = np.array([x,y,z])
 # Increment the atom_id counter each time a new Atom instance is created
         Atom.atom_id += 1 
 
@@ -183,6 +186,9 @@ class Universe:
         self.torsions = torsions
   
 
+    def get_cartesian_atom_array(self):
+        return np.vstack(atom.vec for atom in self.atoms)
+
     def update_neighbor_assignments(self):
         '''
         This method updates the fnn, snn, and tnn fields of atoms in the universe. It should
@@ -224,12 +230,5 @@ class Universe:
             TNN += self.__get_first_nearest_neighbors(snn)
         TNN = list(set(TNN))
         return TNN
-
-
-
-
-
-
-
 
 

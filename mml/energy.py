@@ -21,7 +21,7 @@ def main(molfile=None,ffield='gaff',noreport=False):
     '''
     universe = read_input.main(molfile)
  
-    coordinates = input2cartesian_array(universe.atoms)  
+    coordinates = universe.get_cartesian_atom_array() 
 
     energy(ffield,universe,noreport)
 
@@ -107,9 +107,6 @@ def print_report(universe,results):
     print ""
     print "E(TOTAL): %f kcal/mol \n" % (results['E'])
 
-
-def input2cartesian_array(Atoms):
-    return np.vstack(atom.vec for atom in Atoms )
 
 if __name__ == '__main__':
 

@@ -7,18 +7,19 @@ import scipy.optimize
 import energy
 import read_input
 
-def main(molfile,ffield,tol):
+def main(molfile,method,tol):
   
     universe = read_input.main(molfile)
 
+    ffield='gaff'
     energy.energy(ffield,universe,noreport=False)
 
-    coordinates = input2cartesian_array(universe.atoms)  
+    coordinates = universe.get_cartesian_atom_array()
     flat_coords = np.ndarray.flatten(coordinates)
 
     res = scipy.optimize.minimize(wrap_energy_for_minimizer,flat_coords,args=(ffield,universe),
-     method='L-BFGS-B',tol=tol,bounds=None)
-     
+     method=method,tol=tol,bounds=None)
+    
     energy.energy(ffield,universe,noreport=False)
 
     print res
@@ -47,17 +48,13 @@ def write_cartesian_output(Atoms,coordinates):
         minfile.write( "{0:4s} {1:12.5f} {2:12.5f} {3:12.5f} \n".format(
          Atoms[i].atomtype, coordinates[i][0],coordinates[i][1],coordinates[i][2]) )
     
-def input2cartesian_array(Atoms):
-    return np.vstack(atom.vec for atom in Atoms )
-    
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='\n\n    Molecular Modeling Lite\n',add_help=True)
     parser.add_argument('--molfile',default='/Users/labello/gitwork/mml/no-git/molecules/acfiles/ethane.mol.ac',
      help='Path to .ac molecule file (Antechamber format)')
-    parser.add_argument('--ffield',default='gaff',help='amber94 or gaff')
     parser.add_argument('--tol',default=0.01,help='Energy tolerance for geometry optimization')
-    parser.add_argument('--method',default='BFGS',help='Minimization routine (BFGS, Newton-CG, TNC, SLSSQP)')
+    parser.add_argument('--method',default='BFGS',help='Minimization routine (BFGS, L-BFGS-B,Anneal,Newton-CG, TNC, SLSSQP)')
     args = parser.parse_args()
-    main( args.molfile,args.ffield,float(args.tol))
+    main( args.molfile,args.method,float(args.tol))
 
