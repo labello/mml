@@ -28,26 +28,14 @@ def main(molfile,method,tol):
 def wrap_energy_for_minimizer(flat_coords,ffield,universe):
 
     c = flat_coords.reshape(-1,3)
-    # update the universe with the coords passed in
     for i in xrange(0,len(universe.atoms)):
-        universe.atoms[i].x = c[i][0]
-        universe.atoms[i].y = c[i][1]
-        universe.atoms[i].z = c[i][2]
+        universe.atoms[i].update_coords(c[i][0],c[i][1],c[i][2])
 
-    # write the structure
-    write_cartesian_output(universe.atoms,c)
+    universe.write_xyz()
 
     e = energy.energy(ffield,universe)
     return e
 
-def write_cartesian_output(Atoms,coordinates):
-    minfile = open('MINIMIZE.xyz','a')
-    minfile.write( str(len(coordinates)) )
-    minfile.write( '\n\n' )
-    for i in range(0,len(Atoms)):
-        minfile.write( "{0:4s} {1:12.5f} {2:12.5f} {3:12.5f} \n".format(
-         Atoms[i].atomtype, coordinates[i][0],coordinates[i][1],coordinates[i][2]) )
-    
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='\n\n    Molecular Modeling Lite\n',add_help=True)

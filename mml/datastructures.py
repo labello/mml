@@ -199,10 +199,25 @@ class Universe:
         self.bonds = bonds
         self.angles = angles
         self.torsions = torsions
+
+    def natoms(self):
+        return len(self.atoms)    
   
 
     def get_cartesian_atom_array(self):
         return np.vstack(atom.vec for atom in self.atoms)
+
+    def write_xyz(self,filehandle='MINIMIZE.xyz'):
+        '''
+        Write current coordinates of all atoms in the universe out to a file.  Append to the file if it
+        already exists.  Writes in xyz format.  
+        '''
+        minfile = open(filehandle,'a')
+        minfile.write( str(self.natoms() ) )
+        minfile.write( '\n\n' )
+        for atom in self.atoms: 
+            minfile.write( "{0:4s} {1:12.5f} {2:12.5f} {3:12.5f} \n".format(
+             atom.atomtype,atom.x,atom.y,atom.z) )
 
     def update_neighbor_assignments(self):
         '''
