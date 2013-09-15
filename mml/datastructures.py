@@ -3,6 +3,7 @@ Define data types used by the program.
 '''
 
 import numpy as np
+import random
 
 import measure
 
@@ -65,6 +66,19 @@ class Atom:
         self.y = y
         self.z = z
         self.vec = np.array([x,y,z])
+
+    def update_vels(self,vx,vy,vz):
+        '''Make changes to the velocities of the atoms using this function to ensure that
+           all velocity related properties remain in sync.
+           
+           *Usage
+           for atom in universe:
+               atom.update_coords(newvx,newvy,newvz) 
+        '''
+        self.vx = vx
+        self.vy = vy
+        self.vz = vz
+        self.vvec = np.array([vx,vy,vz])
 
 
         
@@ -214,6 +228,18 @@ class Universe:
         '''
         return np.ndarray.flatten(self.get_cartesian_atom_array())
 
+    def get_cartesian_velocity_array(self):
+        '''Return a single NATOMSx3 Numpy array with atom velocities.'''
+        return np.vstack(atom.vvec for atom in self.atoms)
+
+    def assign_random_velocity(self,absmax=0.1):
+        for atom in self.atoms:
+            vx,vy,vz = (random.uniform(-absmax,absmax),random.uniform(-absmax,absmax),random.uniform(-absmax,absmax)) 
+            atom.update_vels(vx,vy,vz)
+
+    def temperature(self):
+        # do stuff here
+        pass
 
     def write_xyz(self,filehandle='MINIMIZE.xyz'):
         '''
