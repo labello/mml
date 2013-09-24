@@ -1,5 +1,5 @@
 '''
-Define data types used by the program.
+Define data types and some basic operations on that data.
 '''
 
 import numpy as np
@@ -27,6 +27,11 @@ class Atom:
     y                   The atom's Y Cartesian coordinate
     z                   The atom's Z Cartesian coordinate
     vec                 A vector of the atom cooridinates <x,y,z> 
+    vx                  The atom's velocity on the X axis
+    vy                  The atom's velocity on the Y axis
+    vz                  The atom's velocity on the Z axis
+    vvec                A vector of the atom velocity
+    vmean               The mean velocity in all directions 
     '''
 
     atom_id = 0
@@ -50,13 +55,14 @@ class Atom:
         self.vx = 0.0
         self.vy = 0.0
         self.vz = 0.0
-        self.vvec = np.array([x,y,z])
+        self.vvec = np.array([self.vx,self.vy,self.vz])
+        self.vmean = np.linalg.norm(self.vvec)
 # Increment the atom_id counter each time a new Atom instance is created
         Atom.atom_id += 1 
-
+         
     def update_coords(self,x,y,z):
         '''Make changes to the coordinates of the atoms using this function to ensure that
-           all four Cartesian related properties remain in sync.
+           all Cartesian related properties remain in sync.
            
            *Usage
            for atom in universe:
@@ -79,9 +85,8 @@ class Atom:
         self.vy = vy
         self.vz = vz
         self.vvec = np.array([vx,vy,vz])
+        self.vmean = np.linalg.norm(self.vvec)
 
-
-        
 class Bond:
     '''
     A bond object is a container for atoms that participate in the bond, plus some 
@@ -206,6 +211,15 @@ class Universe:
     '''
     A universe object is a container for all particles, boundaries, and other entities
     considered in the calculation.
+
+    =============================  =================================================================
+    Attribute                      Description
+    =============================  =================================================================
+    natoms()                       Calculate the number of atoms in the universe
+    get_cartesian_atom_array()     Return a numpy array with the cartesian coordinates of all atoms
+    get_flat_carteisan_array()     Return a vecotr of the cartesian coordinates
+    get_cartesian_velocity_array() Description
+    temperature()                  Description
     '''
 
     def __init__(self,atoms=[],bonds=[],angles=[],torsions=[]):
@@ -232,14 +246,36 @@ class Universe:
         '''Return a single NATOMSx3 Numpy array with atom velocities.'''
         return np.vstack(atom.vvec for atom in self.atoms)
 
-    def assign_random_velocity(self,absmax=0.1):
+    def assign_random_velocity(self,absmax=100):
+        '''Assign random starting velocity to all atoms in Universe.  
+           absmax: the max absolute value of a velocity in one cartesian direction 
+        '''
         for atom in self.atoms:
             vx,vy,vz = (random.uniform(-absmax,absmax),random.uniform(-absmax,absmax),random.uniform(-absmax,absmax)) 
             atom.update_vels(vx,vy,vz)
 
     def temperature(self):
-        # do stuff here
-        pass
+        ''' T  =   mv**2
+                 [ ----- ]   /  3k
+                     N
+        N = number of atoms
+        k = Boltzman's constant = 1.380658 x 10^-23 kg * m**2 / Kelvin * s**2  
+
+        INCOMING VELOCITY ASSUMED TO BE meters/second
+        '''
+      
+        k = 1.380658 * 10**-23 
+        amu_to_kg             = 1.66053892 * 10**-27
+        angstrom_to_meter     = 1.00000000 * 10**-10
+        seconds_to_picosecond = 1.00000000 * 10**12 
+        mvsq = 0
+        for atom in self.atoms:
+            m = atom.mass * amu_to_kg 
+            v = atom.vmean 
+            mvsq = mvsq + (m * v**2)  
+        mvsqav = mvsq / self.natoms()
+        temperature = mvsqav / (3 * k)
+        return temperature
 
     def write_xyz(self,filehandle='MINIMIZE.xyz'):
         '''
@@ -294,5 +330,4 @@ class Universe:
             TNN += self.__get_first_nearest_neighbors(snn)
         TNN = list(set(TNN))
         return TNN
-
 

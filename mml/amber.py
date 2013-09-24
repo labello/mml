@@ -121,13 +121,16 @@ def calc_nonbonded_energy(ffparams,universe):
                 Eel += el
     return (EVDWs,EEls,EVDW,Eel)
                
+def get_atom_params(ffparams,universe,atom):
+    dk = atom.atomtype
+    if dk in ffparams.Atoms:
+        return ffparams.Atoms[dk]
 
 def get_bond_params(ffparams,universe,bond):
     a1 = bond.atom1 
     a2 = bond.atom2 
     dks = ['-'.join([a1.atomtype,a2.atomtype]),
            '-'.join([a2.atomtype,a1.atomtype])]
-    params = None
     for dk in dks:
         if dk in ffparams.Bonds:
             return ffparams.Bonds[dk]
