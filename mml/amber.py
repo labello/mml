@@ -160,9 +160,9 @@ def get_tor_params(ffparams,universe,torsion):
     for dk in dks:
         if dk in ffparams.Torsions:
             return ffparams.Torsions[dk]
-        else:
-            print "Parameter %s not found" % dk
-            sys.exit()
+
+    print "None of these parameters were found:" % dks
+    sys.exit()
 
 def get_vdw_params(ffparams,atom):
     dk = atom.atomtype

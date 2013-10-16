@@ -1,3 +1,11 @@
 
+#directorys
+no-git/*
+mml/amberff/*
+
+#types of files
 *.pyc
+*.svg
+
+#specific files
 clean

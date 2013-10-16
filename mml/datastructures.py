@@ -5,6 +5,7 @@ Define data types and some basic operations on that data.
 import numpy as np
 import random
 
+import constants
 import measure
 
 class Atom:
@@ -32,6 +33,7 @@ class Atom:
     vz                  The atom's velocity on the Z axis
     vvec                A vector of the atom velocity
     vmean               The mean velocity in all directions 
+    update_coords()
     '''
 
     atom_id = 0
@@ -80,6 +82,9 @@ class Atom:
            *Usage
            for atom in universe:
                atom.update_coords(newvx,newvy,newvz) 
+
+        Velocity should be reported to this function in units of 
+        Angstroms/picosecond.
         '''
         self.vx = vx
         self.vy = vy
@@ -215,11 +220,20 @@ class Universe:
     =============================  =================================================================
     Attribute                      Description
     =============================  =================================================================
+    atoms
+    bonds
+    angles
+    torsions
     natoms()                       Calculate the number of atoms in the universe
+    nparameters()                  Number of cartesian parameters: 3 * natoms()
     get_cartesian_atom_array()     Return a numpy array with the cartesian coordinates of all atoms
     get_flat_carteisan_array()     Return a vecotr of the cartesian coordinates
     get_cartesian_velocity_array() Description
-    temperature()                  Description
+    assign_random_velocity()       Assign random velocity to all atoms in Universe
+    temperature()                  Calculate the temperature of the atoms in the Universe 
+    write_xyz()                    Description
+    update_neighbor_assignments    Description
+
     '''
 
     def __init__(self,atoms=[],bonds=[],angles=[],torsions=[]):
@@ -230,11 +244,18 @@ class Universe:
 
     def natoms(self):
         return len(self.atoms)    
+
+    def nparameters(self):
+        return (self.natoms() * 3 )
   
 
     def get_cartesian_atom_array(self):
         '''Return a single NATOMSx3 Numpy array with the Cartesian coordinates'''
         return np.vstack(atom.vec for atom in self.atoms)
+
+    def get_centered_cartesian_atom_array(self):
+        '''Return a single NATOMSx3 Numpy array with the center-of-mass centered Cartesian coordinates.'''
+        pass  
 
     def get_flat_cartesian_atom_array(self):
         '''Return a vector of the cartesian coordinates.  Useful for the built-in SciPy
@@ -247,12 +268,15 @@ class Universe:
         return np.vstack(atom.vvec for atom in self.atoms)
 
     def assign_random_velocity(self,absmax=100):
-        '''Assign random starting velocity to all atoms in Universe.  
+        '''Assign random starting velocity in angstroms/picosecond to all atoms in Universe.  
            absmax: the max absolute value of a velocity in one cartesian direction 
         '''
         for atom in self.atoms:
-            vx,vy,vz = (random.uniform(-absmax,absmax),random.uniform(-absmax,absmax),random.uniform(-absmax,absmax)) 
+            vx = random.uniform(-absmax,absmax)
+            vy = random.uniform(-absmax,absmax)
+            vz = random.uniform(-absmax,absmax)
             atom.update_vels(vx,vy,vz)
+
 
     def temperature(self):
         ''' T  =   mv**2
@@ -261,20 +285,16 @@ class Universe:
         N = number of atoms
         k = Boltzman's constant = 1.380658 x 10^-23 kg * m**2 / Kelvin * s**2  
 
-        INCOMING VELOCITY ASSUMED TO BE meters/second
+        INCOMING VELOCITY ASSUMED TO BE ANGSTROMS/PICOSECOND
         '''
       
-        k = 1.380658 * 10**-23 
-        amu_to_kg             = 1.66053892 * 10**-27
-        angstrom_to_meter     = 1.00000000 * 10**-10
-        seconds_to_picosecond = 1.00000000 * 10**12 
         mvsq = 0
         for atom in self.atoms:
-            m = atom.mass * amu_to_kg 
+            m = atom.mass 
             v = atom.vmean 
             mvsq = mvsq + (m * v**2)  
         mvsqav = mvsq / self.natoms()
-        temperature = mvsqav / (3 * k)
+        temperature = mvsqav / (3 * constants.k3)
         return temperature
 
     def write_xyz(self,filehandle='MINIMIZE.xyz'):
