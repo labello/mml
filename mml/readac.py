@@ -1,8 +1,14 @@
 
 '''
 This module reads and returns basic information about ac files (Amber Antechamber). It 
-is extremely fragile and not well tested.  It is only intended to provide basic file
+is fragile and not well tested.  It is only intended to provide basic file
 reading capabilities for the purpose of developing the more interesting simulation code.
+
+usage:
+
+import readac
+Atoms,Bonds,Angles,Torsions = readac.main(acfile)
+
 '''
 
 
@@ -17,7 +23,7 @@ Bond  = namedtuple('Bond','i j order')
 Angle = namedtuple('Angle','index i j k')
 Torsion = namedtuple('Torsion','index i j k l')
 
-def main(molfile='/Users/labello/simplemm/molecules/acfiles/2.mol.ac'):
+def main(molfile):
     moldata = open(molfile,'r').readlines()
     moldata = filter(moldata)
 
@@ -40,7 +46,6 @@ def main(molfile='/Users/labello/simplemm/molecules/acfiles/2.mol.ac'):
          
     return (Atoms,Bonds,Angles,Torsions)   
 
-        
 def get_torsions(NBonds,Bonds,Angles):
     torsions = []
     for angle in Angles:
@@ -123,14 +128,14 @@ def processlines(moldata):
     Atoms = []
     index = 0
     for l in atomlines:
-        l = l.strip().split()
-        Atoms.append(Atom(index,l[2],float(l[5]),float(l[6]),float(l[7]),l[9],float(l[8])  )) 
+        notused1,notused2,label,notused3,notused4,x,y,z,charge,atomtype = l.strip().split() 
+        Atoms.append(Atom(index,label,float(x),float(y),float(z),atomtype,float(charge)  )) 
         index += 1
         
     Bonds = []
     for l in bondlines:   
-        l = l.strip().split()
-        Bonds.append(Bond(int(l[2])-1,int(l[3])-1,int(l[4])))
+        notused1,notused2,atom1index,atom2index,order,notused3,notused4 = l.strip().split()
+        Bonds.append(Bond(int(atom1index)-1,int(atom2index)-1,int(order)))
 
     return (counts,Atoms,Bonds)           
 
